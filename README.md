@@ -1,4 +1,5 @@
 # resolution
+[![Build Status](https://travis-ci.org/bninni/resolution.svg?branch=master)](https://travis-ci.org/bninni/resolution)
 
 A response object which synchronously replicates features of `Promise` and more
 
@@ -19,58 +20,58 @@ var Resolution = require('resolution')
 
 ## Description
 
-A **Resolution**_ Object can be used as a response object (function return value)
+A **Resolution** Object can be used as a response object (function return value)
 
 ### States
 
 It can be in one of the following **states**:
 
-  * **pending** - This means the **Resolution**_ Object has been initialized, but not yet **resolved** or **rejected**
+  * **pending** - This means the **Resolution** Object has been initialized, but not yet **resolved** or **rejected**
 
-  * **fulfilled** - This means the **Resolution**_ Object was successful in its operation, or **resolved**
+  * **fulfilled** - This means the **Resolution** Object was successful in its operation, or **resolved**
   
-  * **rejected** - This means the **Resolution**_ Object was unsuccessful in its operation, or **rejected**
+  * **rejected** - This means the **Resolution** Object was unsuccessful in its operation, or **rejected**
   
 ### Properties
   
-The **state** of any **Resolution**_ Object can be determined multiple ways.  Each **Resolution**_ Object has the following properties:
+The **state** of any **Resolution** Object can be determined multiple ways.  Each **Resolution** Object has the following properties:
 
   * **state**      - _String_  - The name of the current state
 
-  * **pending**    - _Boolean_ - True if this **Resolution**_ Object is in the **pending** state
+  * **pending**    - _Boolean_ - True if this **Resolution** Object is in the **pending** state
 
-  * **fulfilled**  - _Boolean_ - True if this **Resolution**_ Object is in the **fulfilled** state
+  * **fulfilled**  - _Boolean_ - True if this **Resolution** Object is in the **fulfilled** state
     * **resolved** will also produce the same result
 
-  * **rejected**   - _Boolean_ - True if this **Resolution**_ Object is in the **rejected** state
+  * **rejected**   - _Boolean_ - True if this **Resolution** Object is in the **rejected** state
   
-Along with being in a specific **state**, a **Resolution**_ Object also has a **value** associated with it.
+Along with being in a specific **state**, a **Resolution** Object also has a **value** associated with it.
 
 It can be accessed with the following property:
 
-  * **value**      - _Any_    - The **value** associated with this **Resolution**_ Object
+  * **value**      - _Any_    - The **value** associated with this **Resolution** Object
 
 ### Types  
   
-**Resolution**_ Objects comes in two types: _**Immutable**_ and _**Mutable**_
+**Resolution** Objects comes in two types: _**Immutable**_ and _**Mutable**_
 
-_**Immutable Resolution**_ Objects behave precisely as `Promises` do, except everything is handled synchronously.
+_**Immutable Resolution** Objects behave precisely as `Promises` do, except everything is handled synchronously.
 
-_**Mutable Resolution**_ Objects behave the same `Promises` during initialization, but the **state** and **value** can still be modified after execution.
+_**Mutable Resolution** Objects behave the same `Promises` during initialization, but the **state** and **value** can still be modified after execution.
 
 ### Comparison to Promises
 
-Along with everything mentioned above, every **Resolution**_ Object has the same properties as a `Promise` does (and more)
+Along with everything mentioned above, every **Resolution** Object has the same properties as a `Promise` does (and more)
 
 *Check out the Instance Methods sections of the API for more details*
   * [Immutable Instance Methods](#immutable_instance_methods)
   * [Mutable Instance Methods](#mutable_instance_methods)
 
-The **Resolution**_ Constructor also has the same properties that the `Promise` Constructor does (and more)
+The **Resolution** Constructor also has the same properties that the `Promise` Constructor does (and more)
 	
 _Check out [Class Methods](#class_methods) section of the API for more details_
 
-To see the tests proving that **Resolutions**_ and `Promises` have the same behavior, run the following from within the module directory:
+To see the tests proving that **Resolutions** and `Promises` have the same behavior, run the following from within the module directory:
 
 ```
 npm run promise-test
@@ -181,7 +182,7 @@ A **Resolution** Object can also be initialized into a specific **state**:
 
   * **Resolution.pending( _value_ )**
 
-    * **value** - _Any_ - The **value** associated with this **Resolution**_ Object
+    * **value** - _Any_ - The **value** associated with this **Resolution** Object
 
 **Examples**
 ```javascript
@@ -203,7 +204,7 @@ var res = Resolution.pending(50)
 
 [Back to Top](#api)
 
-As with `Promises`, a **Resolution**_ Object can automatically invoke functions based on the **state*8
+As with `Promises`, a **Resolution** Object can automatically invoke functions based on the **state*8
 
   * **then( _onResolve_, _onReject_ )**
   
@@ -358,7 +359,7 @@ And as with **Immutable Resolution** Objects, **Mutable Resolution** Objects can
 
   * **Resolution.Mutable.pending( _value_ )**
 
-    * **value** - _Any_ - The **value** associated with this **Resolution**_ Object
+    * **value** - _Any_ - The **value** associated with this **Resolution** Object
 
 ---
 <a name="mutable_instance_methods"></a>

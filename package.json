@@ -1,6 +1,6 @@
 {
   "name": "resolution",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A response object which synchronously replicates features of Promises and more",
   "main": "index.js",
   "directories": {
