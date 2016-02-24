@@ -55,9 +55,9 @@ It can be accessed with the following property:
   
 **Resolution** Objects comes in two types: _**Immutable**_ and _**Mutable**_
 
-_**Immutable Resolution** Objects behave precisely as `Promises` do, except everything is handled synchronously.
+_**Immutable Resolution**_ Objects behave precisely as `Promises` do, except everything is handled synchronously.
 
-_**Mutable Resolution** Objects behave the same `Promises` during initialization, but the **state** and **value** can still be modified after execution.
+_**Mutable Resolution**_ Objects behave the same `Promises` during initialization, but the **state** and **value** can still be modified after execution.
 
 ### Comparison to Promises
 
