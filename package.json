@@ -1,0 +1,42 @@
+{
+  "name": "resolution",
+  "version": "1.0.0",
+  "description": "A response object which synchronously replicates features of Promises and more",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "vows test/test.js --spec",
+    "promise-test": "vows test/promiseTest.js --spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bninni/resolution.git"
+  },
+  "keywords": [
+    "sync",
+    "promise",
+    "sync",
+    "promises",
+    "sync",
+    "response",
+    "object",
+    "success",
+    "fail",
+    "data",
+    "value",
+    "function",
+    "return",
+    "object"
+  ],
+  "devDependencies": {
+    "vows": "~0.8.1"
+  },
+  "author": "Brian Ninni <brian@ninni.io> (http://ninni.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bninni/resolution/issues"
+  },
+  "homepage": "https://github.com/bninni/resolution#readme"
+}

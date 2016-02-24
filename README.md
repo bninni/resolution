@@ -19,40 +19,40 @@ var Resolution = require('resolution')
 
 ## Description
 
-A _**Resolution**_ Object can be used as a response object which gets returned from a function.
+A **Resolution**_ Object can be used as a response object (function return value)
 
 ### States
 
 It can be in one of the following **states**:
 
-  * **pending** - This means the _**Resolution**_ Object has been initialized, but not yet **resolved** or **rejected**
+  * **pending** - This means the **Resolution**_ Object has been initialized, but not yet **resolved** or **rejected**
 
-  * **fulfilled** - This means the _**Resolution**_ Object was successful in its operation
+  * **fulfilled** - This means the **Resolution**_ Object was successful in its operation, or **resolved**
   
-  * **rejected** - This means the _**Resolution**_ Object was unsuccessful in its operation
+  * **rejected** - This means the **Resolution**_ Object was unsuccessful in its operation, or **rejected**
   
 ### Properties
   
-The **state** of any _**Resolution**_ Object can be determined multiple ways.  Each _**Resolution**_ Object has the following properties:
+The **state** of any **Resolution**_ Object can be determined multiple ways.  Each **Resolution**_ Object has the following properties:
 
   * **state**      - _String_  - The name of the current state
 
-  * **pending**    - _Boolean_ - True if this _**Resolution**_ Object is in the **pending** state
+  * **pending**    - _Boolean_ - True if this **Resolution**_ Object is in the **pending** state
 
-  * **fulfilled**  - _Boolean_ - True if this _**Resolution**_ Object is in the **fulfilled** state
+  * **fulfilled**  - _Boolean_ - True if this **Resolution**_ Object is in the **fulfilled** state
     * **resolved** will also produce the same result
 
-  * **rejected**   - _Boolean_ - True if this _**Resolution**_ Object is in the **rejected** state
+  * **rejected**   - _Boolean_ - True if this **Resolution**_ Object is in the **rejected** state
   
-Along with being in a specific **state**, a _**Resolution**_ Object also has a **value** associated with it.
+Along with being in a specific **state**, a **Resolution**_ Object also has a **value** associated with it.
 
 It can be accessed with the following property:
 
-  * **value**      - _Any _    - The **value** associated with this _**Resolution**_ Object
+  * **value**      - _Any_    - The **value** associated with this **Resolution**_ Object
 
 ### Types  
   
-_**Resolution**_ Object comes in two types, _**Immutable**_ and _**Mutable**_
+**Resolution**_ Objects comes in two types: _**Immutable**_ and _**Mutable**_
 
 _**Immutable Resolution**_ Objects behave precisely as `Promises` do, except everything is handled synchronously.
 
@@ -60,23 +60,17 @@ _**Mutable Resolution**_ Objects behave the same `Promises` during initializatio
 
 ### Comparison to Promises
 
-Along with everything mentioned above, every _**Resolution**_ Object has the same properties as a `Promise` does (and more):
-	
-	* **then()**
-	* **catch()**
-	
+Along with everything mentioned above, every **Resolution**_ Object has the same properties as a `Promise` does (and more)
+
 *Check out the Instance Methods sections of the API for more details*
   * [Immutable Instance Methods](#immutable_instance_methods)
   * [Mutable Instance Methods](#mutable_instance_methods)
 
-The _**Resolution**_ Constructor also has the same properties that the `Promise` Constructor does (and more):
-	
-	* **race()**
-	* **all()**
+The **Resolution**_ Constructor also has the same properties that the `Promise` Constructor does (and more)
 	
 _Check out [Class Methods](#class_methods) section of the API for more details_
 
-To see the tests proving that _**Resolutions**_ and `Promises` have the same behavior, run the following from within the module directory:
+To see the tests proving that **Resolutions**_ and `Promises` have the same behavior, run the following from within the module directory:
 
 ```
 npm run promise-test
@@ -99,16 +93,16 @@ or check out `tests\promiseTest.js`
 
 A **Resolution** object can be created the same way a `Promise` can:
 
-**Resolution( _fn_ )**
+  * **Resolution( _fn_ )**
 
-  * `fn` - _Function_ - Function which will resolve or reject the **Resolution.**  Has the following `arguments`
+  * `fn` - _Function_ - Function which will resolve or reject the **Resolution.**  Has the following `arguments`:
 
-    * `resolve` - _Function_ - Function to invoke to **resolve** this **Resolution** with the given **value**
+    * `resolve` - _Function_ - Function to **resolve** this **Resolution** with the given **value**
 
-    * `reject`  - _Function_ - Function to invoke to **reject** this **Resolution** with the given **value**
+    * `reject`  - _Function_ - Function to **reject** this **Resolution** with the given **value**
 	
 _Note :_
-  * An `error` will be thrown if `fn` is not a _Function_
+  * An `error` will be thrown if `fn` is not a function
   
 **Examples**
 
@@ -181,13 +175,13 @@ var res = Resolution(function( resolve, reject ){
 ---
 A **Resolution** Object can also be initialized into a specific **state**:
 
-* **Resolution.resolve( _value_ )**
+  * **Resolution.resolve( _value_ )**
 
-* **Resolution.reject( _value_ )**
+  * **Resolution.reject( _value_ )**
 
-* **Resolution.pending( _value_ )**
+  * **Resolution.pending( _value_ )**
 
-  * **value** - _Any _ - The **value** associated with this _**Resolution**_ Object
+    * **value** - _Any_ - The **value** associated with this **Resolution**_ Object
 
 **Examples**
 ```javascript
@@ -207,11 +201,15 @@ var res = Resolution.pending(50)
 <a name="immutable_instance_methods"></a>
 **Immutable Instance Methods**
 
-**then( _onResolve_, _onReject_ )**
+[Back to Top](#api)
+
+As with `Promises`, a **Resolution**_ Object can automatically invoke functions based on the **state*8
+
+  * **then( _onResolve_, _onReject_ )**
   
-  * `onResolve` - _Function_ - Function to run if this **Resolution** Object is **resolved**.
+    * `onResolve` - _Function_ - Function to run if this **Resolution** Object is **resolved**.
   
-  * `onReject`  - _Function_ - Function to run if this **Resolution** Object is **rejected**.
+    * `onReject`  - _Function_ - Function to run if this **Resolution** Object is **rejected**.
   
 For both, the input `argument` is the **value** of this **Resolution** Object
 
@@ -224,7 +222,8 @@ Returns a new **Resolution** Object **resolved** to the return value of the `cal
 ```javascript
 var res = Resolution(function( resolve, reject ){
   resolve( 100 );
-}).then(function( value ){
+})
+.then(function( value ){
   console.log('Resolved to ' + value);
 },function( value ){
   console.log('Rejected to ' + value);
@@ -267,9 +266,9 @@ var res = Resolution.resolve(100)
 //Error
 ```
 ---
-**catch( _onReject_ )**
+  * **catch( _onReject_ )**
     
-  * `onReject`  - _Function_ - Function to run if this **Resolution** Object is **rejected**.
+    * `onReject`  - _Function_ - Function to run if this **Resolution** Object is **rejected**.
   
 The input `argument` is the **value** of this **Resolution** Object
 
@@ -321,15 +320,21 @@ var res = Resolution.resolve(100)
 [Back to Top](#api)
 
 A **Mutable Resolution** Object follows the same principals as an **Immutable Resolution** Object when initializing.
-[See here for Initialize Immutable Resolutions](#initializing_mutable)
 
-It is invoked by:
+[See here for Initializing Immutable Resolutions](#initializing_immutable)
 
-**Resolution.Mutable( _fn_ )**
+  * **Resolution.Mutable( _fn_ )**
 
-The only difference between a **Mutable Resolution** and **Immutable Resolution** Objects during initialization is that the state of a **Mutable Resolution** Object can be set asynchronously.
+The only difference between a **Mutable Resolution** and **Immutable Resolution** Objects during initialization is that the state of a **Mutable Resolution** Object can be set more than once or asynchronously.
 
 ```javascript
+var res = Resolution.Mutable(function( resolve, reject ){
+	resolve(100);
+	reject(0);
+})
+//res.state = 'rejected'
+//res.value = 0
+
 var res = Resolution.Mutable(function( resolve, reject ){
 	setTimeout(function(){
 		resolve( 100 );
@@ -347,26 +352,29 @@ var res = Resolution.Mutable(function( resolve, reject ){
 
 And as with **Immutable Resolution** Objects, **Mutable Resolution** Objects can be initialized in a specific **state**
 
-* **Resolution.Mutable.resolve( _value_ )**
+  * **Resolution.Mutable.resolve( _value_ )**
 
-* **Resolution.Mutable.reject( _value_ )**
+  * **Resolution.Mutable.reject( _value_ )**
 
-* **Resolution.Mutable.pending( _value_ )**
+  * **Resolution.Mutable.pending( _value_ )**
 
-  * **value** - _Any _ - The **value** associated with this _**Resolution**_ Object
+    * **value** - _Any_ - The **value** associated with this **Resolution**_ Object
 
 ---
 <a name="mutable_instance_methods"></a>
 **Mutable Instance Methods**
+
 [Back to Top](#api)
 
-A **Mutable Resolution** Object contains **then** and **catch** ([described here](#immutable_instance_methods))
+A **Mutable Resolution** Object also contains **then** and **catch** ([described here](#immutable_instance_methods))
 
 Note that **then** and **catch** are invoked immediately based on the **state** of the **Resolution** Object as that instant.
-If the **state** later changes, these will not be invoked.
-To have callbacks be invoked upon a **state* change, use the **on** method (see below)
 
-**Mutable Resolution** Objects also contain the following methods:
+If the **state** later changes, these will not be retroactively invoked.
+
+To have callbacks be invoked upon a **state** change, use the **on** method (see below)
+
+**Mutable Resolution** Objects contain the following additional methods:
 
   * **resolve( _value_ )**
     * To **resolve** this **Resolution** with the given **value**
@@ -400,15 +408,15 @@ res.resolve();
 
 Callbacks can also be connected to the **state** of the **Mutable Resolution** Object
 
-**on( _which_, _fn_[, _once_ ]) **
+  *  **on( _which_, _fn_[, _once_ ])**
     
-  * `which` - _String_   - Name of the state change function to connect the callback `fn` to
-    *  Either `'resolve'`, `'reject'`, or `'reset'`
+    * `which` - _String_   - Name of the state change function to connect the callback `fn` to
+      *  Either `'resolve'`, `'reject'`, or `'reset'`
     
-  * `fn`    - _Function_ - The Callback Function to run whenever the desired state change function is called
-    * Input argument is the **value** of this **Resolution**
+    * `fn`    - _Function_ - The Callback Function to run whenever the desired state change function is called
+      * Input argument is the **value** of this **Resolution**
 	
-  * `once`  - _Boolean_  - Whether the `fn` should only be called one time
+    * `once`  - _Boolean_  - Whether the `fn` should only be called one time
 
 **Examples**
 
@@ -435,13 +443,13 @@ res.resolve(50);
 ### Class Methods
 [Back to Top](#api)
 
-The **Resolution** Class has some methods to handle arrays (or other iterable objects) of **Resolution** Objects
+Just like `Promises`, the **Resolution** Class has some methods to handle arrays (or other iterable objects) of **Resolution** Objects
 
-**all( _iterable_ )**
+  * **all( _iterable_ )**
 
-  * `iterable` - _iterable_   - Object to iterate through
+    * `iterable` - _iterable_   - Object to iterate through
 
-**all** will return a new **Resolution** Object that is:
+Returns a new **Resolution** Object that is:
   * **rejected** if no `iterable` object was provided
     * **value** will be an `Error`
   * **resolved** if there are no **pending** or **rejected** **Resolution** Objects in the `iterable`
@@ -473,15 +481,18 @@ var res = Resolution.all([Resolution.resolve(100),Resolution.pending(50)])
 //res.state = 'pending'
 //res.value = undefined
 ```
-**race( _iterable_ )**
+---
+  * **race( _iterable_ )**
 
-  * `iterable` - _iterable_   - Object to iterate through
+    * `iterable` - _iterable_   - Object to iterate through
 
-**race** will return a new **Resolution** Object that is:
+Returns a new **Resolution** Object that is:
   * **rejected** with an `Error` if no `iterable` object was provided
-  * **resolved** with the value of the first Non-**pending** **Resolution** Objects in the `iterable`
-  * **rejected** with the value of the first **rejected** **Resolution** Objects in the `iterable`
-  * **pending** with `undefined` if no elements in the `iterable` are Non-**pending** **Resolution** Objects
+  * **resolved** if the first element in the `iterable` that is not a **pending** **Resolution** Object in the `iterable` is also not a **rejected** **Resolution** Object
+    * **value** is the value of that element
+  * **rejected** if the first element in the `iterable` that is not a **pending** **Resolution** Object in the `iterable` is a **rejected** **Resolution** Object
+    * **value** is the value of that **rejected** **Resolution** Object
+  * **pending** with `undefined` if the `iterable` is empty or every element in the `iterable` is a **pending** **Resolution** Object
   
 **Examples**
 ```javascript
