@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.5
+
+**Date:** *2016-02-25*
+
+**Changes:**
+  * Update the **README**
+
 ## 1.0.4
 
 **Date:** *2016-02-25*

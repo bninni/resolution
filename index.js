@@ -231,8 +231,8 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 			result = handle( resolve, reject );
 		}
 		catch(e){
-			//If there was an error, then reject with that error if not already settled
-			if( !isSettled ) reject(e);
+			//If there was an error, then reject with that error if state is Pending
+			if( isPending ) reject(e);
 		}
 		
 		//If the result value was not 'undefined', then resolve with that value

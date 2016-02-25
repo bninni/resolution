@@ -43,6 +43,7 @@ The **state** of any **Resolution** Object can be determined multiple ways.  Eac
   * **pending**    - _Boolean_ - True if this **Resolution** Object is in the **pending** state
 
   * **fulfilled**  - _Boolean_ - True if this **Resolution** Object is in the **fulfilled** state
+  
     * **resolved** will also produce the same result
 
   * **rejected**   - _Boolean_ - True if this **Resolution** Object is in the **rejected** state
@@ -58,7 +59,7 @@ The associated **value** can be accessed with the following property:
 **Here is a quick example:**
 ```javascript
 var myFile = Resolution(function(){
-	return fs.readFileSync( myFile, 'utf8' );
+  return fs.readFileSync( myFile, 'utf8' );
 })
 /*
 If no error:
@@ -91,7 +92,7 @@ Along with everything mentioned above, every **Resolution** Object has the same 
   * [Mutable Instance Methods](#mutable_instance_methods)
 
 The **Resolution** Constructor also has the same properties that the `Promise` Constructor does (and more)
-	
+
 _Check out [Class Methods](#class_methods) section of the API for more details_
 
 To see the tests proving that **Resolutions** and `Promises` have the same behavior, run the following from within the module directory:
@@ -115,18 +116,18 @@ or check out `tests\promiseTest.js`
 ### Initialize Immutable Resolutions
 [Back to Top](#api)
 
-A **Resolution** object can be created the same way a `Promise` can:
+Just like `Promises`, a **Resolution** object is created using an `executor` function:
 
-  * **Resolution( _fn_ )**
+  * **Resolution( _executor_ )**
 
-  * `fn` - _Function_ - Function which will resolve or reject the **Resolution.**  Has the following `arguments`:
+    * `executor` - _Function_ - Function which will resolve or reject the **Resolution.**  Has the following `arguments`:
 
-    * `resolve` - _Function_ - Function to **resolve** this **Resolution** with the given **value**
+      * `resolve` - _Function_ - Function to **resolve** this **Resolution** with the given **value**
 
-    * `reject`  - _Function_ - Function to **reject** this **Resolution** with the given **value**
-	
+      * `reject`  - _Function_ - Function to **reject** this **Resolution** with the given **value**
+
 _Note :_
-  * An `error` will be thrown if `fn` is not a function
+  * An `error` will be thrown if `executor` is not a function
   
 **Examples**
 
@@ -203,7 +204,7 @@ var res = Resolution(function( resolve, reject ){
 //res.value = undefined
 ```
 
-Any `errors` thrown during the execution of `fn` will automatically `reject` the **Resolution** with the `error` as the **value**
+Any `errors` thrown during the execution of `executor` will automatically `reject` the **Resolution** with the `error` as the **value**
   * Unless the **Resolution** was **resolved** or **rejected** before the `error` was thrown
 
 ```javascript
@@ -229,7 +230,7 @@ A **Resolution** Object can also be initialized into a specific **state**:
 
   * **Resolution.pending( _value_ )**
 
-    * **value** - _Any_ - The **value** associated with this **Resolution** Object
+    * `value` - _Any_ - The **value** associated with this **Resolution** Object
 
 **Examples**
 ```javascript
@@ -251,7 +252,7 @@ var res = Resolution.pending(50)
 
 [Back to Top](#api)
 
-As with `Promises`, a **Resolution** Object can automatically invoke functions based on the **state*8
+As with `Promises`, a **Resolution** Object can automatically invoke functions based on the **state**
 
   * **then( _onResolve_, _onReject_ )**
   
@@ -371,29 +372,29 @@ A **Mutable Resolution** Object follows the same principals as an **Immutable Re
 
 [See here for Initializing Immutable Resolutions](#initializing_immutable)
 
-  * **Resolution.Mutable( _fn_ )**
+  * **Resolution.Mutable( _executor_ )**
 
 The only difference between a **Mutable Resolution** and **Immutable Resolution** Objects during initialization is that the state of a **Mutable Resolution** Object can be set more than once or asynchronously.
 
 ```javascript
 var res = Resolution.Mutable(function( resolve, reject ){
-	resolve(100);
-	reject(0);
+  resolve(100);
+  reject(0);
 })
 //res.state = 'rejected'
 //res.value = 0
 
 var res = Resolution.Mutable(function( resolve, reject ){
-	reject(0);
-	return 100;
+  reject(0);
+  return 100;
 })
 //res.state = 'fulfilled'
 //res.value = 100
 
 var res = Resolution.Mutable(function( resolve, reject ){
-	setTimeout(function(){
-		resolve( 100 );
-	},1000);
+  setTimeout(function(){
+    resolve( 100 );
+  },1000);
 })
 
 //Immediately:
@@ -413,7 +414,7 @@ And as with **Immutable Resolution** Objects, **Mutable Resolution** Objects can
 
   * **Resolution.Mutable.pending( _value_ )**
 
-    * **value** - _Any_ - The **value** associated with this **Resolution** Object
+    * `value` - _Any_ - The **value** associated with this **Resolution** Object
 
 ---
 <a name="mutable_instance_methods"></a>
@@ -432,20 +433,20 @@ To have callbacks be invoked upon a **state** change, use the **on** method (see
 **Mutable Resolution** Objects contain the following additional methods:
 
   * **resolve( _value_ )**
-    * To **resolve** this **Resolution** with the given **value**
+    * To **resolve** this **Resolution** with the given `value`
   
   * **reject( _value_ )** 
-    * To **reject** this **Resolution** with the given **value**
+    * To **reject** this **Resolution** with the given `value`
   
   * **reset( _value_ )** 
-    * To **reset** this **Resolution** to **pending** with the given **value**
+    * To **reset** this **Resolution** to **pending** with the given `value`
   
   * **lock( _value_ )** 
-    * To **lock** this **Resolution** in its current **state** with the given **value**
-	* _**Use Cautiously**_ - A **locked** **Resolution** can not **unlocked**
+    * To **lock** this **Resolution** in its current **state** with the given `value`
+    * _**Use Cautiously**_ - A **locked** **Resolution** can not **unlocked**
 
-If no **value** is provided, then the current **value** of this **Resolution** will not change
-	
+If no `value` is provided, then the current **value** of this **Resolution** will not change
+
 ```javascript
 var res = Resolution.Mutable.resolve( 100 );
 //res.state = 'fulfilled'
@@ -483,7 +484,7 @@ Callbacks can also be connected to the **state** of the **Mutable Resolution** O
     
     * `fn`    - _Function_ - The Callback Function to run whenever the desired state change function is called
       * Input argument is the **value** of this **Resolution**
-	
+
     * `once`  - _Boolean_  - Whether the `fn` should only be called one time
 
 **Examples**
