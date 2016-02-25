@@ -131,6 +131,36 @@ vows.describe('Test').addBatch({
 			assert.equal( r.pending, false );
 			assert.equal( r.value, 0 );
 		},
+		'Can resolve with return value' : function( f ){
+			var r = Resolution(function(){return 100});
+			assert.equal( r.fulfilled, true );
+			assert.equal( r.rejected, false );
+			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.pending, false );
+			assert.equal( r.value, 100 );
+			var r = Resolution.Mutable(function(){return 100});
+			assert.equal( r.fulfilled, true );
+			assert.equal( r.rejected, false );
+			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.pending, false );
+			assert.equal( r.value, 100 );
+		},
+		'Immutable will not resolve with return value if already settled' : function( f ){
+			var r = Resolution(function(res, rej){rej(0);return 100});
+			assert.equal( r.fulfilled, false );
+			assert.equal( r.rejected, true );
+			assert.equal( r.state, 'rejected' );
+			assert.equal( r.pending, false );
+			assert.equal( r.value, 0 );
+		},
+		'Mutable will resolve with return value even if already settled' : function( f ){
+			var r = Resolution.Mutable(function(res, rej){rej(0);return 100});
+			assert.equal( r.fulfilled, true );
+			assert.equal( r.rejected, false );
+			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.pending, false );
+			assert.equal( r.value, 100 );
+		},
 		'Will be Pending if not Resolved or Rejected Synchronously' : function(){
 			var r = Resolution(function(res,rej){ setTimeout(function(){res()},0) });
 			assert.equal( r.fulfilled, false );

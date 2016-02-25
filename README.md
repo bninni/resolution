@@ -20,7 +20,7 @@ var Resolution = require('resolution')
 
 ## Description
 
-A **Resolution** Object can be used as a response object (function return value)
+A **Resolution** Object can be used as a response object to inform the caller whether an execution succeeded or failed as well having a return value associated with it.
 
 ### States
 
@@ -51,6 +51,21 @@ It can be accessed with the following property:
 
   * **value**      - _Any_    - The **value** associated with this **Resolution** Object
 
+**Here is a quick example:**
+```javascript
+var myFile = Resolution(function(){
+	return fs.readFileSync( myFile, 'utf8' );
+})
+/*
+If no error:
+  myFile.state = 'fulfilled'
+  myFile.value = <the file>
+If there was an error:
+  myFile.state = 'rejected'
+  myFile.value = <the Error>
+*/
+```
+  
 ### Types  
   
 **Resolution** Objects comes in two types: _**Immutable**_ and _**Mutable**_
@@ -152,6 +167,30 @@ var res = Resolution(function( resolve, reject ){
 //res.value = undefined
 
 // > 1000 ms later:
+//res.state = 'pending'
+//res.value = undefined
+```
+
+Unlike `Promises`, a **Resolution** can also be **resolved** but returning any value other than `undefined`
+  * If it was already settled by invoking the `resolve` or `reject` arguments, then the return value will be ignored
+
+```javascript
+var res = Resolution(function( resolve, reject ){
+  return 100;
+})
+//res.state = 'fulfilled'
+//res.value = 100
+
+var res = new Resolution(function( resolve, reject ){
+  reject( 0 );
+  return 100;
+})
+//res.state = 'rejected'
+//res.value = 0
+
+var res = Resolution(function( resolve, reject ){
+  return undefined;
+})
 //res.state = 'pending'
 //res.value = undefined
 ```
@@ -337,6 +376,13 @@ var res = Resolution.Mutable(function( resolve, reject ){
 //res.value = 0
 
 var res = Resolution.Mutable(function( resolve, reject ){
+	reject(0);
+	return 100;
+})
+//res.state = 'fulfilled'
+//res.value = 100
+
+var res = Resolution.Mutable(function( resolve, reject ){
 	setTimeout(function(){
 		resolve( 100 );
 	},1000);
@@ -385,6 +431,10 @@ To have callbacks be invoked upon a **state** change, use the **on** method (see
   
   * **reset( _value_ )** 
     * To **reset** this **Resolution** to **pending** with the given **value**
+  
+  * **settle( _value_ )** 
+    * To **settle** this **Resolution** in its current **state** with the given **value**
+	* A **settled** **Mutable Resolution** can no longer be modified
 
 If no **value** is provided, then the current **value** of this **Resolution** will not change
 	

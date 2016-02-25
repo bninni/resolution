@@ -1,7 +1,7 @@
 {
   "name": "resolution",
-  "version": "1.0.2",
-  "description": "A response object which synchronously replicates features of Promises and more",
+  "version": "1.0.3",
+  "description": "A synchronous Promise-like response object containing a resolved/rejected state and associated value",
   "main": "index.js",
   "directories": {
     "test": "test"

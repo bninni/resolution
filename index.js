@@ -13,7 +13,7 @@ To create a Resolution Object.
 function Resolution( isImmutable, hasMethod, handle, value ){
 	
 	//Initialize the state as 'pending'
-	var settled, fulfilled, rejected, pending, state,
+	var settled, fulfilled, rejected, pending, state, result,
 		self = this,
 		callbacks = {
 			reject : [],
@@ -188,7 +188,8 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 			value : reset
 		},
 		settle : {
-			value : function(){
+			value : function( data ){
+				setData( data );
 				isImmutable = true;
 				settled = true;
 			}
@@ -208,14 +209,17 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 		
 		try{
 			//Invoke the method with the resolve and reject functions
-			handle( resolve, reject );
+			result = handle( resolve, reject );
 		}
 		catch(e){
 			//If there was an error, then reject with that error if not already settled
 			if( !settled ) reject(e);
 		}
 		
-		//Settle so the handle cannot asynchronously resolve/reject Immutable Resolutions
+		//If the result value was not 'undefined', then resolve with that value
+		if( typeof result !== 'undefined' ) resolve( result );
+		
+		//Settle regardless so the handle cannot asynchronously resolve/reject Immutable Resolutions
 		settled = true;
 	}
 	// Otherwise, update the state if initial value was provided as a boolean value
