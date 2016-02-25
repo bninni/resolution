@@ -1,7 +1,7 @@
 # resolution
 [![Build Status](https://travis-ci.org/bninni/resolution.svg?branch=master)](https://travis-ci.org/bninni/resolution)
 
-A response object which synchronously replicates features of `Promise` and more
+A synchronous Promise-like response object containing a resolved/rejected state and associated value
 
 ## Install
 ```
@@ -20,7 +20,9 @@ var Resolution = require('resolution')
 
 ## Description
 
-A **Resolution** Object can be used as a response object to inform the caller whether an execution succeeded or failed as well having a return value associated with it.
+A **Resolution** Object is a response object to inform the caller whether an execution succeeded or failed.
+
+A **Resolution** Object can also have a return value associated with it.
 
 ### States
 
@@ -44,10 +46,12 @@ The **state** of any **Resolution** Object can be determined multiple ways.  Eac
     * **resolved** will also produce the same result
 
   * **rejected**   - _Boolean_ - True if this **Resolution** Object is in the **rejected** state
-  
-Along with being in a specific **state**, a **Resolution** Object also has a **value** associated with it.
 
-It can be accessed with the following property:
+  * **settled**   - _Boolean_ - True if the **state** of this **Resolution** Object is not **pending**
+
+  * **locked**   - _Boolean_ - True if the **state** and **value** of this **Resolution** Object cannot be changed
+
+The associated **value** can be accessed with the following property:
 
   * **value**      - _Any_    - The **value** associated with this **Resolution** Object
 
@@ -70,10 +74,14 @@ If there was an error:
   
 **Resolution** Objects comes in two types: _**Immutable**_ and _**Mutable**_
 
-_**Immutable Resolution**_ Objects behave precisely as `Promises` do, except everything is handled synchronously.
+_**Immutable Resolution:**_
+  * Can only be **resolved** or **rejected** once
+  * **Locks** immediately after the execution of the provided Function
 
-_**Mutable Resolution**_ Objects behave the same `Promises` during initialization, but the **state** and **value** can still be modified after execution.
-
+_**Mutable Resolution:**_
+  * Can indefinitely have its **state** and **value** changed
+  * Will only **lock** when explicitly forced to do so
+  
 ### Comparison to Promises
 
 Along with everything mentioned above, every **Resolution** Object has the same properties as a `Promise` does (and more)
@@ -432,9 +440,9 @@ To have callbacks be invoked upon a **state** change, use the **on** method (see
   * **reset( _value_ )** 
     * To **reset** this **Resolution** to **pending** with the given **value**
   
-  * **settle( _value_ )** 
-    * To **settle** this **Resolution** in its current **state** with the given **value**
-	* A **settled** **Mutable Resolution** can no longer be modified
+  * **lock( _value_ )** 
+    * To **lock** this **Resolution** in its current **state** with the given **value**
+	* _**Use Cautiously**_ - A **locked** **Resolution** can not **unlocked**
 
 If no **value** is provided, then the current **value** of this **Resolution** will not change
 	
@@ -452,6 +460,15 @@ res.reset( 50 );
 //res.value = 50
 
 res.resolve();
+//res.state = 'fulfilled'
+//res.value = 50
+//res.locked = false
+
+res.lock();
+//res.locked = true
+
+//cannot be changed once locked
+res.reject( 0 );
 //res.state = 'fulfilled'
 //res.value = 50
 ```

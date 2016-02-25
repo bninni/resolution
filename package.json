@@ -1,6 +1,6 @@
 {
   "name": "resolution",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A synchronous Promise-like response object containing a resolved/rejected state and associated value",
   "main": "index.js",
   "directories": {

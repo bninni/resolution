@@ -6,110 +6,116 @@ vows.describe('Test').addBatch({
 	'Mutable Resolution':{
 		'Can initialize to Pending, Resolved Rejected' : function( r ){
 			var r = Resolution.Mutable.pending()
-			assert.equal( r.pending, true );
+			assert.equal( r.state, 'pending' );
 			assert.equal( r.fulfilled, false );
 			assert.equal( r.rejected, false );
-			assert.equal( r.state, 'pending' );
+			assert.equal( r.pending, true );
+			assert.equal( r.settled, false );
+			assert.equal( r.locked, false );
 			assert( typeof r.value === 'undefined' );
 			
 			r = Resolution.Mutable.resolve( 100 )
+			assert.equal( r.state, 'fulfilled' );
 			assert.equal( r.fulfilled, true );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, false );
-			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, false );
 			assert.equal( r.value, 100 );
 			
 			r = Resolution.Mutable.reject( false, 0 )
+			assert.equal( r.state, 'rejected' );
 			assert.equal( r.fulfilled, false );
 			assert.equal( r.rejected, true );
-			assert.equal( r.state, 'rejected' );
 			assert.equal( r.pending, false );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, false );
 			assert.equal( r.value, 0 );
 		},
 		'Can be mutated':function( r ){
 			var r = Resolution.Mutable.resolve( 100 )
 			r.reject( 0 );
+			assert.equal( r.state, 'rejected' );
 			assert.equal( r.fulfilled, false );
 			assert.equal( r.rejected, true );
-			assert.equal( r.state, 'rejected' );
 			assert.equal( r.pending, false );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, false );
 			assert.equal( r.value, 0 );
 		},
 		'Mutating without a value will not affect current value':function( r ){
 			var r = Resolution.Mutable.reject( 0 )
 			r.resolve();
-			assert.equal( r.fulfilled, true );
 			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.fulfilled, true );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, false );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, false );
 			assert.equal( r.value, 0 );
 		},
 		'Can Reset to Pending state':function( r ){
 			var r = Resolution.Mutable.resolve( 100 )
 			r.reset( 50 );
-			assert.equal( r.fulfilled, false );
 			assert.equal( r.state, 'pending' );
+			assert.equal( r.fulfilled, false );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, true );
+			assert.equal( r.settled, false );
+			assert.equal( r.locked, false );
 			assert.equal( r.value, 50 );
 		},
-		'Can Settle':function( r ){
+		'Can Lock':function( r ){
 			var r = Resolution.Mutable.reject( 0 )
 			r.resolve( 100 );
-			r.settle();
+			r.lock();
 			r.reject( 0 );
+			assert.equal( r.state, 'fulfilled' );
 			assert.equal( r.fulfilled, true );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, false );
-			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, true );
 			assert.equal( r.value, 100 );
 		},
 	},
-	'Pending':{
-		topic : Resolution.pending( 50 ),
-		'Is Pending with value of 50' : function( r ){
-			assert.equal( r.fulfilled, false );
+	'Initializing Immutable Specific State':{
+		'Pending' : function(){
+			var r = Resolution.pending( 50 );
 			assert.equal( r.state, 'pending' );
+			assert.equal( r.fulfilled, false );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, true );
+			assert.equal( r.settled, false );
+			assert.equal( r.locked, true );
 			assert.equal( r.value, 50 );
 		},
-		'Does not have resolve/reject/reset/on properties':function( r ){
-			assert( typeof r.resolve === 'undefined' );
-			assert( typeof r.reject === 'undefined' );
-			assert( typeof r.reset === 'undefined' );
-			assert( typeof r.on === 'undefined' );
-		},
-	},
-	'Resolve':{
-		topic : Resolution.resolve( 100 ),
-		'Is Resolved to 100' : function( r ){
-			assert.equal( r.fulfilled, true );
+		'Resolved' : function(){
+			var r = Resolution.resolve( 100 );
 			assert.equal( r.state, 'fulfilled' );
+			assert.equal( r.fulfilled, true );
 			assert.equal( r.rejected, false );
 			assert.equal( r.pending, false );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, true );
 			assert.equal( r.value, 100 );
 		},
-		'Does not have resolve/reject/reset/on properties':function( r ){
+		'Rejected' : function(){
+			var r = Resolution.reject( 0 )
+			assert.equal( r.state, 'rejected' );
+			assert.equal( r.fulfilled, false );
+			assert.equal( r.rejected, true );
+			assert.equal( r.pending, false );
+			assert.equal( r.settled, true );
+			assert.equal( r.locked, true );
+			assert.equal( r.value, 0 );
+		},
+		'Does not have resolve/reject properties':function(){
+			var r = Resolution.reject( 0 )
 			assert( typeof r.resolve === 'undefined' );
 			assert( typeof r.reject === 'undefined' );
 			assert( typeof r.reset === 'undefined' );
-			assert( typeof r.on === 'undefined' );
-		},
-	},
-	'Reject':{
-		topic : Resolution.reject( 0 ),
-		'Is Rejected to 0' : function( r ){
-			assert.equal( r.fulfilled, false );
-			assert.equal( r.rejected, true );
-			assert.equal( r.state, 'rejected' );
-			assert.equal( r.pending, false );
-			assert.equal( r.value, 0 );
-		},
-		'Does not have resolve/reject properties':function( r ){
-			assert.equal( r.resolve, undefined );
-			assert.equal( r.reject, undefined );
-			assert( typeof r.reset === 'undefined' );
+			assert( typeof r.lock === 'undefined' );
 			assert( typeof r.on === 'undefined' );
 		},
 	},
@@ -117,64 +123,40 @@ vows.describe('Test').addBatch({
 		topic :function(){ return function( res, rej ){ res(100); rej(0); } },
 		'Immutable will be Resolved to 100' : function( f ){
 			var r = Resolution(f);
-			assert.equal( r.fulfilled, true );
 			assert.equal( r.state, 'fulfilled' );
-			assert.equal( r.rejected, false );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 100 );
 		},
 		'Mutable will be Rejected to 0' : function( f ){
 			var r = Resolution.Mutable(f);
-			assert.equal( r.fulfilled, false );
-			assert.equal( r.rejected, true );
 			assert.equal( r.state, 'rejected' );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 0 );
 		},
 		'Can resolve with return value' : function( f ){
 			var r = Resolution(function(){return 100});
-			assert.equal( r.fulfilled, true );
-			assert.equal( r.rejected, false );
 			assert.equal( r.state, 'fulfilled' );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 100 );
 			var r = Resolution.Mutable(function(){return 100});
-			assert.equal( r.fulfilled, true );
-			assert.equal( r.rejected, false );
 			assert.equal( r.state, 'fulfilled' );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 100 );
 		},
 		'Immutable will not resolve with return value if already settled' : function( f ){
 			var r = Resolution(function(res, rej){rej(0);return 100});
-			assert.equal( r.fulfilled, false );
-			assert.equal( r.rejected, true );
 			assert.equal( r.state, 'rejected' );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 0 );
 		},
 		'Mutable will resolve with return value even if already settled' : function( f ){
 			var r = Resolution.Mutable(function(res, rej){rej(0);return 100});
-			assert.equal( r.fulfilled, true );
-			assert.equal( r.rejected, false );
 			assert.equal( r.state, 'fulfilled' );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 100 );
 		},
 		'Will be Pending if not Resolved or Rejected Synchronously' : function(){
 			var r = Resolution(function(res,rej){ setTimeout(function(){res()},0) });
-			assert.equal( r.fulfilled, false );
-			assert.equal( r.rejected, false );
 			assert.equal( r.state, 'pending' );
-			assert.equal( r.pending, true );
 			assert( typeof r.value === "undefined" );
 		},
 		'Will Reject with Errors' : function(){			
 			var r = Resolution(function(){ throw new Error() })
-			assert.equal( r.fulfilled, false );
-			assert.equal( r.rejected, true );
 			assert.equal( r.state, 'rejected' );
-			assert.equal( r.pending, false );
 			assert( r.value instanceof Error );
 		},
 		'Will Throw if not a function' : function(){			
@@ -182,17 +164,11 @@ vows.describe('Test').addBatch({
 		},
 		'Will Not Reject with Errors if Already Resolved/Rejected' : function(){
 			var r = Resolution(function(res, rej){ res(100);throw new Error() })
-			assert.equal( r.fulfilled, true );
 			assert.equal( r.state, 'fulfilled' );
-			assert.equal( r.rejected, false );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 100 );
 			
 			var r = Resolution(function(res, rej){ rej(0);throw new Error() })
-			assert.equal( r.fulfilled, false );
 			assert.equal( r.state, 'rejected' );
-			assert.equal( r.rejected, true );
-			assert.equal( r.pending, false );
 			assert.equal( r.value, 0 );
 		}
 	},
@@ -304,59 +280,62 @@ vows.describe('Test').addBatch({
 	"Race" : {
 		"Race on non-iterable is Rejected" : function(){
 			var r = Resolution.race()
-			assert.equal( r.rejected, true );
+			assert.equal( r.state, 'rejected' );
+			assert( r.value instanceof Error );
 		},
 		"Race on empty array is pending" : function(){
 			var r = Resolution.race([])
-			assert.equal( r.pending, true );
+			assert.equal( r.state, 'pending' );
+			assert( typeof r.value === 'undefined' );
 		},
 		"Race on Pending array is pending" : function(){
 			var r = Resolution.race([Resolution.pending(5)])
-			assert.equal( r.pending, true );
+			assert.equal( r.state, 'pending' );
 			assert( typeof r.value === 'undefined' );
 		},
 		"Race matches first non-pending Resolution" : function(){
 			var r = Resolution.race([Resolution.resolve(100),Resolution.reject(0)])
-			assert.equal( r.fulfilled, true );
+			assert.equal( r.state, 'fulfilled' );
 			assert.equal( r.value, 100 );
 			
 			r = Resolution.race([Resolution.reject(0),Resolution.resolve(100)])
-			assert.equal( r.rejected, true );
+			assert.equal( r.state, 'rejected' );
 			assert.equal( r.value, 0 );
 			
 			r = Resolution.race([Resolution.pending(50),Resolution.resolve(100)])
-			assert.equal( r.fulfilled, true );
+			assert.equal( r.state, 'fulfilled' );
 			assert.equal( r.value, 100 );
 		},
 		"Race resolves with first value" : function(){
 			var r = Resolution.race([100,0])
-			assert.equal( r.fulfilled, true );
+			assert.equal( r.state, 'fulfilled' );
 			assert.equal( r.value, 100 );
 		},
 	},
 	"All" : {
 		"All on non-iterable is Rejected" : function(){
 			var r = Resolution.all()
-			assert.equal( r.rejected, true );
+			assert.equal( r.state, 'rejected' );
+			assert( r.value instanceof Error );
 		},
 		"All on empty array resolves an empty array" : function(){
 			var r = Resolution.all([])
-			assert.equal( r.fulfilled, true );
+			assert.equal( r.state, 'fulfilled' );
 			assert.deepEqual( r.value, [] );
 		},
 		"All on Pending array is pending" : function(){
 			var r = Resolution.all([Resolution.pending(5)])
-			assert.equal( r.pending, true );
+			assert.equal( r.state, 'pending' );
 			assert( typeof r.value === 'undefined' );
 		},
 		"All rejects if Rejected Resolution is in the Array" : function(){
 			var r = Resolution.all([Resolution.resolve(100),Resolution.reject(0)]);
-			assert.equal( r.rejected, true );
+			assert.equal( r.state, 'rejected' );
 			assert.equal( r.value, 0 );
 		},
 		"All resolves if all array is non-Pending or non-Rejected Resolutions" : function(){
 			var r = Resolution.all([100,0,Resolution.resolve(50)])
-			assert.equal( r.fulfilled, true );
+			assert.equal( r.state, 'fulfilled' );
 			assert.deepEqual( r.value, [100,0,50] );
 		},
 	},

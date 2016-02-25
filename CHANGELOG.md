@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.4
+
+**Date:** *2016-02-25*
+
+**Changes:**
+  * Added the *settled** and **locked** property
+  * Added the **lock** method to the **Mutable Resolution** instance
+    * was previously misleadingly labelled as **settle**
+
 ## 1.0.3
 
 **Date:** *2016-02-25*

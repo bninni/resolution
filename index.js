@@ -13,7 +13,13 @@ To create a Resolution Object.
 function Resolution( isImmutable, hasMethod, handle, value ){
 	
 	//Initialize the state as 'pending'
-	var settled, fulfilled, rejected, pending, state, result,
+	var state,
+		result,
+		isSettled,
+		isFulfilled,
+		isRejected,
+		isPending,
+		isLocked = false,
 		self = this,
 		callbacks = {
 			reject : [],
@@ -47,51 +53,55 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 	};
 	
 	//	To update the state data based on the given value (true if fulfilled, false if rejected)
-	function setState( isFulfilled ){
-		pending = false;
-		settled = true;
-		fulfilled = isFulfilled;
-		rejected = !isFulfilled;
-		state = isFulfilled ? 'fulfilled' : 'rejected';
+	function setState( doFulfill ){
+		isPending = typeof doFulfill !== 'boolean';
+		isSettled = !isPending;
+		isFulfilled = doFulfill === true;
+		isRejected = doFulfill === false;
+		state = isFulfilled ? 'fulfilled' : ( isRejected ? 'rejected' : 'pending');
 	}
 	
-	// To update the value to the given data if data was provided
-	function setData( data ){
+	// To update the value to the given data (if data was provided) and set isLocked to the given value
+	function setData( data, doLock ){
+		isLocked = doLock;
 		if( typeof data !== 'undefined' ) value = data;
 	}
 	
 	/*
 		To resolve this Resolution to the given value by setting the state to 'fulfilled' and updating the data (if provided)
-			-Will not resolve if this Resolution is Immutable and Settled
+			-Will not resolve if this Resolution is Locked
 	*/
 	function resolve( data ){
-		if( isImmutable && settled ) return;
+		if( isLocked ) return;
 		setState( true );
-		setData( data );
+		//Update the data and lock if Immutable
+		setData( data, isImmutable );
 		runCallbacks( 'resolve' );
 		return self;
 	}
 	
 	/*
 		To reject this Resolution to the given value by setting the state to 'rejected' and updating the data (if provided)
-			-Will not reject if this Resolution is Immutable and Settled
+			-Will not reject if this Resolution is Locked
 	*/
 	function reject( data ){
-		if( isImmutable && settled  ) return;
+		if( isLocked ) return;
 		setState( false );
-		setData( data );
+		//Update the data and lock if Immutable
+		setData( data, isImmutable );
 		runCallbacks( 'reject' );
 		return self;
 	}
 	
-	// To reset this Resolution to the pending state and update the data (if provided)
+	/*
+		To reset this Resolution to the pending state and update the data (if provided)
+			-Will not reset if this Resolution is Locked
+	*/
 	function reset( data ){
-		settled = false;
-		fulfilled = false;
-		rejected = false;
-		pending = true;
-		state = 'pending';
-		setData( data );
+		if( isLocked ) return;
+		setState();
+		//Update the data and unlock
+		setData( data, false );
 		runCallbacks( 'reset' );
 		return self;
 	}
@@ -110,12 +120,12 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 				//Initialize the new data to be equal to the current data
 				var fn,
 					newValue = value,
-					newSuccess = fulfilled;
+					newSuccess = isFulfilled;
 				
-				//If this is fulfilled, then run the onResolve function
-				if( fulfilled ) fn = onResolve;
-				//If this is rejected, then run the onReject function
-				else if( rejected ) fn = onReject;
+				//If this is Fulfilled, then run the onResolve function
+				if( isFulfilled ) fn = onResolve;
+				//If this is Rejected, then run the onReject function
+				else if( isRejected ) fn = onReject;
 				//If this is pending, then set newSuccess to null
 				else newSuccess = null;
 				
@@ -142,24 +152,34 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 				return self.then( null, onError );
 			}
 		},
+		settled : {
+			get : function(){
+				return isSettled;
+			}
+		},
+		locked : {
+			get : function(){
+				return isLocked;
+			}
+		},
 		pending : {
 			get : function(){
-				return pending;
+				return isPending;
 			}
 		},
 		resolved : {
 			get : function(){
-				return fulfilled;
+				return isFulfilled;
 			}
 		},
 		fulfilled : {
 			get : function(){
-				return fulfilled;
+				return isFulfilled;
 			}
 		},
 		rejected : {
 			get : function(){
-				return rejected;
+				return isRejected;
 			}
 		},
 		state : {
@@ -187,11 +207,10 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 		reset : {
 			value : reset
 		},
-		settle : {
+		lock : {
 			value : function( data ){
-				setData( data );
-				isImmutable = true;
-				settled = true;
+				//Update the data and Lock
+				setData( data, true );
 			}
 		},
 		on : {
@@ -200,7 +219,7 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 	});
 	
 	//Initialize the state as 'pending'
-	reset();
+	setState();
 	
 	//If a method was provided, then invoke it
 	if( hasMethod ){
@@ -213,17 +232,17 @@ function Resolution( isImmutable, hasMethod, handle, value ){
 		}
 		catch(e){
 			//If there was an error, then reject with that error if not already settled
-			if( !settled ) reject(e);
+			if( !isSettled ) reject(e);
 		}
 		
 		//If the result value was not 'undefined', then resolve with that value
 		if( typeof result !== 'undefined' ) resolve( result );
-		
-		//Settle regardless so the handle cannot asynchronously resolve/reject Immutable Resolutions
-		settled = true;
 	}
 	// Otherwise, update the state if initial value was provided as a boolean value
 	else if( typeof handle === 'boolean' ) setState( handle );
+		
+	//Lock if Immutable
+	if( isImmutable ) isLocked = true;
 }
 
 /*
